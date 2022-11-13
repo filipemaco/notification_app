@@ -5,6 +5,7 @@ from app import schemas
 from app.crud import notification as crud_notification
 from app.crud import user as crud_user
 from app.dependencies import get_db
+from app.tasks.notification import send_notification
 
 router = APIRouter(
     prefix="/notifications",
@@ -24,7 +25,12 @@ def create_notification_for_user(
 ):
     if not crud_user.get_user(db, user_id=notification.user_id):
         raise HTTPException(status_code=400, detail="User does not exist")
-    return crud_notification.create_user_notification(db=db, notification=notification)
+
+    notification_db = crud_notification.create_user_notification(db=db, notification=notification)
+
+    send_notification.delay(notification_db.id)
+
+    return notification_db
 
 
 @router.get("/{notification_id}", response_model=schemas.Notification)

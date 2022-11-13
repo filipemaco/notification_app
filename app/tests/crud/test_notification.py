@@ -1,6 +1,9 @@
+from datetime import datetime, timedelta
+
 from app import schemas
 from app.crud import notification as crud_notification
 from app.crud import user as crud_user
+from app.models import Notification
 
 
 def test_create_notification(db_session):
@@ -60,7 +63,7 @@ def test_get_notification(db_session):
     assert notification.notification_type == expected_notification.notification_type
 
 
-def test_get_notifications(db_session):
+def test_update_notification_status(db_session):
     user_id = crud_user.create_user(
         db_session,
         schemas.UserCreate(
@@ -71,17 +74,61 @@ def test_get_notifications(db_session):
         ),
     ).id
 
-    for _ in range(5):
-        crud_notification.create_user_notification(
-            db_session,
-            schemas.NotificationCreate(
-                subject="Text",
-                content={"random": "text"},
-                notification_type=schemas.NotificationTypeEnum.email.value,
-                user_id=user_id,
-            ),
-        )
+    notification = crud_notification.create_user_notification(
+        db_session,
+        schemas.NotificationCreate(
+            subject="Text",
+            content={"random": "text"},
+            notification_type=schemas.NotificationTypeEnum.email.value,
+            user_id=user_id,
+        ),
+    )
 
-    notifications = crud_notification.get_notifications(db_session)
+    assert notification.status == schemas.StatusEnum.new
 
-    assert len(notifications) == 5
+    crud_notification.update_notification_status(db_session, notification.id, schemas.StatusEnum.failed)
+    db_session.refresh(notification)
+
+    assert notification.status == schemas.StatusEnum.failed
+
+
+def test_get_stuck_notifications(db_session):
+    user_id = crud_user.create_user(
+        db_session,
+        schemas.UserCreate(
+            id=11,
+            email="random@gmail.com",
+            country_code=22,
+            phone_number=333333,
+        ),
+    ).id
+
+    data = [
+        (1, datetime.utcnow(), schemas.StatusEnum.done),
+        (2, datetime.utcnow(), schemas.StatusEnum.in_progress),
+        (3, datetime.utcnow(), schemas.StatusEnum.failed),
+        (4, datetime.utcnow(), schemas.StatusEnum.new),
+        (5, datetime.utcnow() - timedelta(hours=2, minutes=1), schemas.StatusEnum.done),
+        (6, datetime.utcnow() - timedelta(hours=2, minutes=1), schemas.StatusEnum.in_progress),
+        (7, datetime.utcnow() - timedelta(hours=2, minutes=1), schemas.StatusEnum.failed),
+        (8, datetime.utcnow() - timedelta(hours=2, minutes=1), schemas.StatusEnum.new),
+    ]
+
+    for id, created_at, status in data:
+        d = {
+            "id": id,
+            "user_id": user_id,
+            "notification_type": "email",
+            "subject": "Hi!",
+            "content": {"type": "random"},
+            "created_at": created_at,
+            "status": status
+        }
+        db_session.add(Notification(**d))
+
+    db_session.commit()
+
+    assert all(
+        notification.id in (6, 7,  8)
+        for notification in crud_notification.get_stuck_notifications(db_session)
+    )
