@@ -8,6 +8,11 @@
 ```
 - Swagger API documentation is available in here: **http://127.0.0.1:8004/docs**
 
+### Pre-populate the database
+```sh
+docker-compose exec notification_service python management.py recreate-db && \
+docker-compose exec notification_service python management.py populate-db
+```
 
 ## Other commands
 #### Format the code with back and isort

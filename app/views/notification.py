@@ -15,8 +15,7 @@ router = APIRouter(
 
 @router.get("/", response_model=list[schemas.Notification])
 def get_notifications(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
-    items = crud_notifications.get_notifications(db, skip=skip, limit=limit)
-    return items
+    return crud_notifications.get_notifications(db, skip=skip, limit=limit)
 
 
 @router.post("/", response_model=schemas.Notification, summary="Create a notification")
@@ -25,8 +24,15 @@ def create_notification_for_user(
 ):
     if not crud_user.get_user(db, user_id=notification.user_id):
         raise HTTPException(status_code=400, detail="User does not exist")
-    a = crud_notifications.create_user_notification(db=db, notification=notification)
-    return a
+    return crud_notifications.create_user_notification(db=db, notification=notification)
+
+
+@router.get("/{notification_id}", response_model=schemas.Notification)
+def get_notification(notification_id: int, db: Session = Depends(get_db)):
+    db_notification = crud_notifications.get_notification(db, notification_id=notification_id)
+    if not db_notification:
+        raise HTTPException(status_code=404, detail="Notification not found")
+    return db_notification
 
 
 notifications_router = router

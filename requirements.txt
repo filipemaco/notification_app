@@ -12,3 +12,4 @@ pytest-cov==4.0.0
 black==22.10.0
 isort==5.10.1
 flake8==5.0.4
+typer[all]==0.7.0
