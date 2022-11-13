@@ -1,4 +1,4 @@
-from typing import Any
+from datetime import datetime
 
 from enum import Enum
 
@@ -23,19 +23,16 @@ class NotificationBase(BaseModel):
     content: dict
     notification_type: NotificationTypeEnum
     user_id: int
-    status: StatusEnum = StatusEnum.new
 
 
 class NotificationCreate(NotificationBase):
     pass
 
 
-class NotificationUpdate(NotificationBase):
-    pass
-
-
 class Notification(NotificationBase):
     id: int
+    status: StatusEnum
+    created_at: datetime
 
     class Config:
         orm_mode = True

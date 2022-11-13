@@ -7,9 +7,9 @@ def get_notifications(db: Session, skip: int = 0, limit: int = 100):
     return db.query(models.Notification).offset(skip).limit(limit).all()
 
 
-def create_user_notification(db: Session, device: schemas.NotificationCreate):
-    db_item = models.Notification(**device.dict())
-    db.add(db_item)
+def create_user_notification(db: Session, notification: schemas.NotificationCreate):
+    db_notification = models.Notification(status=schemas.StatusEnum.new.value, **notification.dict())
+    db.add(db_notification)
     db.commit()
-    db.refresh(db_item)
-    return db_item
+    db.refresh(db_notification)
+    return db_notification
