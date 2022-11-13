@@ -1,5 +1,5 @@
 from app import schemas
-from app.crud import notification as crud_notifications
+from app.crud import notification as crud_notification
 from app.crud import user as crud_user
 
 
@@ -106,7 +106,7 @@ def test_get_user_ok(client, db_session):
         user_id=user.id,
     )
     crud_user.create_user(db_session, user)
-    crud_notifications.create_user_notification(db_session, notification)
+    crud_notification.create_user_notification(db_session, notification)
 
     response = client.get(f"/users/{user.id}")
     content = response.json()

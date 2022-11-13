@@ -1,5 +1,5 @@
 from app import schemas
-from app.crud import notification as crud_notifications
+from app.crud import notification as crud_notification
 from app.crud import user as crud_user
 
 
@@ -22,7 +22,7 @@ def test_get_notifications_ok(client, db_session):
     # Create two notification for each user
     for user in users:
         for _ in range(2):
-            crud_notifications.create_user_notification(
+            crud_notification.create_user_notification(
                 db_session,
                 schemas.NotificationCreate(
                     subject="Text",
@@ -39,10 +39,12 @@ def test_get_notifications_ok(client, db_session):
 
 
 def test_create_notification_ok(client, db_session):
-    user = schemas.UserCreate(
-        id=2, email="random@gmail.com", country_code=22, phone_number=333333
+    user = crud_user.create_user(
+        db_session,
+        schemas.UserCreate(
+            id=2, email="random@gmail.com", country_code=22, phone_number=333333
+        ),
     )
-    crud_user.create_user(db_session, user)
 
     notification = schemas.NotificationCreate(
         subject="Text",
@@ -82,7 +84,7 @@ def test_get_notification_ok(client, db_session):
             id=2, email="random@gmail.com", country_code=22, phone_number=333333
         ),
     )
-    notification = crud_notifications.create_user_notification(
+    notification = crud_notification.create_user_notification(
         db_session,
         schemas.NotificationCreate(
             subject="Text",
