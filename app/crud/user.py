@@ -1,15 +1,17 @@
-from typing import Optional
+from typing import List, Optional
 
 from sqlalchemy.orm import Session
 
 from app import models, schemas
 
 
-def get_user(db: Session, user_id: int):
+def get_user(db: Session, user_id: int) -> Optional[models.User]:
     return db.query(models.User).filter(models.User.id == user_id).first()
 
 
-def get_user_by_email(db: Session, email: str, user_id: Optional[int] = None):
+def get_user_by_email(
+    db: Session, email: str, user_id: Optional[int] = None
+) -> Optional[models.User]:
     db_users = db.query(models.User).filter(models.User.email == email)
     if user_id:
         db_users = db_users.filter(models.User.id != user_id)
@@ -19,7 +21,7 @@ def get_user_by_email(db: Session, email: str, user_id: Optional[int] = None):
 
 def get_user_by_code_and_phone(
     db: Session, country_code: int, phone_number: int, user_id: Optional[int] = None
-):
+) -> Optional[models.User]:
     db_users = db.query(models.User).filter(
         models.User.country_code == country_code,
         models.User.phone_number == phone_number,
@@ -31,11 +33,11 @@ def get_user_by_code_and_phone(
     return db_users.first()
 
 
-def get_users(db: Session, skip: int = 0, limit: int = 100):
+def get_users(db: Session, skip: int = 0, limit: int = 100) -> List[models.User]:
     return db.query(models.User).offset(skip).limit(limit).all()
 
 
-def create_user(db: Session, user: schemas.UserCreate):
+def create_user(db: Session, user: schemas.UserCreate) -> models.User:
     db_user = models.User(**user.dict())
     db.add(db_user)
     db.commit()
@@ -43,7 +45,7 @@ def create_user(db: Session, user: schemas.UserCreate):
     return db_user
 
 
-def update_user(db: Session, user_id: int, user_in: schemas.UserUpdate):
+def update_user(db: Session, user_id: int, user_in: schemas.UserUpdate) -> models.User:
     db_user = db.query(models.User).filter(models.User.id == user_id).first()
     for var, value in vars(user_in).items():
         setattr(db_user, var, value) if value else None

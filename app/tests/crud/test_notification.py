@@ -86,7 +86,9 @@ def test_update_notification_status(db_session):
 
     assert notification.status == schemas.StatusEnum.new
 
-    crud_notification.update_notification_status(db_session, notification.id, schemas.StatusEnum.failed)
+    crud_notification.update_notification_status(
+        db_session, notification.id, schemas.StatusEnum.failed
+    )
     db_session.refresh(notification)
 
     assert notification.status == schemas.StatusEnum.failed
@@ -109,8 +111,16 @@ def test_get_stuck_notifications(db_session):
         (3, datetime.utcnow(), schemas.StatusEnum.failed),
         (4, datetime.utcnow(), schemas.StatusEnum.new),
         (5, datetime.utcnow() - timedelta(hours=2, minutes=1), schemas.StatusEnum.done),
-        (6, datetime.utcnow() - timedelta(hours=2, minutes=1), schemas.StatusEnum.in_progress),
-        (7, datetime.utcnow() - timedelta(hours=2, minutes=1), schemas.StatusEnum.failed),
+        (
+            6,
+            datetime.utcnow() - timedelta(hours=2, minutes=1),
+            schemas.StatusEnum.in_progress,
+        ),
+        (
+            7,
+            datetime.utcnow() - timedelta(hours=2, minutes=1),
+            schemas.StatusEnum.failed,
+        ),
         (8, datetime.utcnow() - timedelta(hours=2, minutes=1), schemas.StatusEnum.new),
     ]
 
@@ -122,13 +132,13 @@ def test_get_stuck_notifications(db_session):
             "subject": "Hi!",
             "content": {"type": "random"},
             "created_at": created_at,
-            "status": status
+            "status": status,
         }
         db_session.add(Notification(**d))
 
     db_session.commit()
 
     assert all(
-        notification.id in (6, 7,  8)
+        notification.id in (6, 7, 8)
         for notification in crud_notification.get_stuck_notifications(db_session)
     )

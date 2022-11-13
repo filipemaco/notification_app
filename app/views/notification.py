@@ -26,7 +26,9 @@ def create_notification_for_user(
     if not crud_user.get_user(db, user_id=notification.user_id):
         raise HTTPException(status_code=400, detail="User does not exist")
 
-    notification_db = crud_notification.create_user_notification(db=db, notification=notification)
+    notification_db = crud_notification.create_user_notification(
+        db=db, notification=notification
+    )
 
     send_notification.delay(notification_db.id)
 

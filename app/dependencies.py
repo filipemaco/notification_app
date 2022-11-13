@@ -11,4 +11,5 @@ def get_db() -> Generator:
     finally:
         db.close()
 
+
 db_context = contextmanager(get_db)

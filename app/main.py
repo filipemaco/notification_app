@@ -1,8 +1,7 @@
 import os
 
-from fastapi import FastAPI
-
 from celery import Celery
+from fastapi import FastAPI
 
 from app.database import Base, engine
 
@@ -15,6 +14,7 @@ def create_app() -> FastAPI:
     )
 
     from app.views import notifications_router, users_router
+
     app.include_router(users_router)
     app.include_router(notifications_router)
 
@@ -26,10 +26,10 @@ app = create_app()
 celery = Celery(
     __name__,
     broker=os.environ.get("CELERY_BROKER_URL"),
-    backend=os.environ.get("CELERY_RESULT_BACKEND")
+    backend=os.environ.get("CELERY_RESULT_BACKEND"),
 )
 celery.conf.imports = [
-    'app.tasks.notification',
+    "app.tasks.notification",
 ]
 
 

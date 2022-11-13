@@ -3,25 +3,36 @@ import time
 
 from celery import shared_task
 
+from app import schemas
 from app.crud import notification as crud_notification
-from app.schemas import StatusEnum
 from app.dependencies import db_context
 
 
-@shared_task(bind=True, autoretry_for=(Exception,), retry_backoff=True, retry_kwargs={"max_retries": 3})
+@shared_task(
+    bind=True,
+    autoretry_for=(Exception,),
+    retry_backoff=True,
+    retry_kwargs={"max_retries": 3},
+)
 def send_notification(self, notification_id: int):
     with db_context() as db:
-        crud_notification.update_notification_status(db, notification_id, StatusEnum.in_progress.value)
+        crud_notification.update_notification_status(
+            db, notification_id, schemas.StatusEnum.in_progress
+        )
 
         time.sleep(2)  # Send request to provider or add to queue
 
         if not random.choice([0, 0, 0, 1]):
             # Random error in API
-            crud_notification.update_notification_status(db, notification_id, StatusEnum.failed.value)
+            crud_notification.update_notification_status(
+                db, notification_id, schemas.StatusEnum.failed
+            )
             db.commit()
             raise Exception()
 
-        crud_notification.update_notification_status(db, notification_id, StatusEnum.done.value)
+        crud_notification.update_notification_status(
+            db, notification_id, schemas.StatusEnum.done
+        )
 
 
 @shared_task(name="task_schedule_failed_notifications")
