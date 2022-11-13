@@ -2,7 +2,7 @@ import logging
 
 from fastapi import FastAPI
 
-from app.database import Base, engine, SessionLocal
+from app.database import Base, SessionLocal, engine
 
 logger = logging.getLogger("uvicorn")
 
@@ -10,7 +10,8 @@ logger = logging.getLogger("uvicorn")
 def create_app() -> FastAPI:
     app = FastAPI()
 
-    from app.views import users_router, notifications_router
+    from app.views import notifications_router, users_router
+
     app.include_router(users_router)
     app.include_router(notifications_router)
 
@@ -28,9 +29,11 @@ async def startup_event():
     Base.metadata.create_all(bind=engine)
 
     import json
+
     data = json.loads(open("./dummy_data/users.json").read())
 
     from app.models import User
+
     db = SessionLocal()
     for d in data:
         db.add(User(**d))
@@ -40,11 +43,7 @@ async def startup_event():
     logger.info("Initial data created")
 
 
-@app.on_event("shutdown")
-async def shutdown_event():
-    logger.info("Shutting down...")
-
-
 if __name__ == "__main__":
     import uvicorn
+
     uvicorn.run(app, host="0.0.0.0", port=8000)

@@ -1,13 +1,14 @@
 import os
 import pathlib
-
 from functools import lru_cache
 
 
 class BaseConfig:
     BASE_DIR: pathlib.Path = pathlib.Path(__file__).parent.parent
 
-    DATABASE_URL: str = os.environ.get("DATABASE_URL", f"sqlite:///{BASE_DIR}/db.sqlite3")
+    DATABASE_URL: str = os.environ.get(
+        "DATABASE_URL", f"sqlite:///{BASE_DIR}/db.sqlite3"
+    )
     DATABASE_CONNECT_DICT: dict = {}
 
 
@@ -21,10 +22,7 @@ class TestingConfig(BaseConfig):
 
 @lru_cache()
 def get_settings():
-    config_cls_dict = {
-        "development": DevelopmentConfig,
-        "testing": TestingConfig
-    }
+    config_cls_dict = {"development": DevelopmentConfig, "testing": TestingConfig}
 
     config_name = os.environ.get("FASTAPI_CONFIG", "development")
     config_cls = config_cls_dict[config_name]

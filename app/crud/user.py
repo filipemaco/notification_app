@@ -17,10 +17,12 @@ def get_user_by_email(db: Session, email: str, user_id: Optional[int] = None):
     return db_users.first()
 
 
-def get_user_by_code_and_phone(db: Session, country_code: int, phone_number: int, user_id: Optional[int] = None):
+def get_user_by_code_and_phone(
+    db: Session, country_code: int, phone_number: int, user_id: Optional[int] = None
+):
     db_users = db.query(models.User).filter(
         models.User.country_code == country_code,
-        models.User.phone_number == phone_number
+        models.User.phone_number == phone_number,
     )
 
     if user_id:
@@ -53,6 +55,6 @@ def update_user(db: Session, user_id: int, user_in: schemas.UserUpdate):
 
 
 def delete_user(db: Session, user_id: int):
-   db_user = db.query(models.User).filter(models.User.id == user_id).first()
-   db.delete(db_user)
-   db.commit()
+    db_user = db.query(models.User).filter(models.User.id == user_id).first()
+    db.delete(db_user)
+    db.commit()

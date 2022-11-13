@@ -1,2 +1,3 @@
-from app.schemas.notification import Notification, NotificationCreate, StatusEnum, NotificationTypeEnum
-from app.schemas.user import User, UserCreate, UserUpdate
+from app.schemas.notification import (Notification, NotificationCreate, # noqa
+                                      NotificationTypeEnum, StatusEnum)
+from app.schemas.user import User, UserCreate, UserUpdate # noqa

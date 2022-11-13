@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, BigInteger, String
+from sqlalchemy import BigInteger, Column, Integer, String
 from sqlalchemy.orm import relationship
 
 from app.database import Base
@@ -12,7 +12,9 @@ class User(Base):
     country_code = Column(Integer, nullable=False)
     phone_number = Column(Integer, nullable=False)
 
-    notifications = relationship("Notification", back_populates="user", cascade="all, delete-orphan")
+    notifications = relationship(
+        "Notification", back_populates="user", cascade="all, delete-orphan"
+    )
 
     def __str__(self):
         return self.id

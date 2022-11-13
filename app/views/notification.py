@@ -1,5 +1,4 @@
 from fastapi import APIRouter, Depends, HTTPException
-
 from sqlalchemy.orm import Session
 
 from app import schemas
@@ -21,7 +20,9 @@ def get_notifications(skip: int = 0, limit: int = 100, db: Session = Depends(get
 
 
 @router.post("/", response_model=schemas.Notification, summary="Create a notification")
-def create_notification_for_user(notification: schemas.NotificationCreate, db: Session = Depends(get_db)):
+def create_notification_for_user(
+    notification: schemas.NotificationCreate, db: Session = Depends(get_db)
+):
     if not crud_user.get_user(db, user_id=notification.user_id):
         raise HTTPException(status_code=400, detail="User does not exist")
     a = crud_notifications.create_user_notification(db=db, notification=notification)

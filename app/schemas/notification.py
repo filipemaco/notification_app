@@ -1,21 +1,20 @@
 from datetime import datetime
-
 from enum import Enum
 
 from pydantic import BaseModel
 
 
 class NotificationTypeEnum(str, Enum):
-    push = 'push'
-    sms = 'sms'
-    email = 'email'
+    push = "push"
+    sms = "sms"
+    email = "email"
 
 
 class StatusEnum(str, Enum):
-    new = 'new'
-    in_progress = 'in_progress'
-    done = 'done'
-    failed = 'failed'
+    new = "new"
+    in_progress = "in_progress"
+    done = "done"
+    failed = "failed"
 
 
 class NotificationBase(BaseModel):
