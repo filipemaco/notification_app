@@ -13,3 +13,4 @@ black==22.10.0
 isort==5.10.1
 flake8==5.0.4
 typer[all]==0.7.0
+requests==2.28.1

@@ -4,7 +4,11 @@ from app import models, schemas
 
 
 def get_notification(db: Session, notification_id: int):
-    return db.query(models.Notification).filter(models.Notification.id == notification_id).first()
+    return (
+        db.query(models.Notification)
+        .filter(models.Notification.id == notification_id)
+        .first()
+    )
 
 
 def get_notifications(db: Session, skip: int = 0, limit: int = 100):

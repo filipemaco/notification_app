@@ -1,8 +1,9 @@
 import json
+
 import typer
 
-from app.models import User, Notification
 from app.database import Base, SessionLocal, engine
+from app.models import Notification, User
 
 app = typer.Typer()
 

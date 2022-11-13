@@ -29,7 +29,9 @@ def create_notification_for_user(
 
 @router.get("/{notification_id}", response_model=schemas.Notification)
 def get_notification(notification_id: int, db: Session = Depends(get_db)):
-    db_notification = crud_notifications.get_notification(db, notification_id=notification_id)
+    db_notification = crud_notifications.get_notification(
+        db, notification_id=notification_id
+    )
     if not db_notification:
         raise HTTPException(status_code=404, detail="Notification not found")
     return db_notification
