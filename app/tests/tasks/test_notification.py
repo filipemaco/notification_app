@@ -1,13 +1,13 @@
-import pytest
-
 from datetime import datetime, timedelta
-
 from unittest import mock
+
+import pytest
 
 from app import schemas
 from app.models import Notification
-from app.tasks.notification import schedule_failed_notifications, send_notification
-from app.tests.utils import create_user_factory, create_notification_factory
+from app.tasks.notification import (schedule_failed_notifications,
+                                    send_notification)
+from app.tests.utils import create_notification_factory, create_user_factory
 
 
 @mock.patch("app.tasks.notification.random.choice")
@@ -39,7 +39,10 @@ def test_send_notification_ok(random_choice_mock, db_session):
 def test_schedule_failed_notifications(send_notification_mock, db_session):
     user_id = create_user_factory(db_session).id
     data = [
-        (datetime.utcnow() - timedelta(hours=6, minutes=1), schemas.StatusEnum.in_progress),
+        (
+            datetime.utcnow() - timedelta(hours=6, minutes=1),
+            schemas.StatusEnum.in_progress,
+        ),
         (datetime.utcnow() - timedelta(hours=5, minutes=1), schemas.StatusEnum.failed),
         (datetime.utcnow() - timedelta(hours=2, minutes=1), schemas.StatusEnum.new),
     ]

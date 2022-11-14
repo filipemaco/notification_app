@@ -1,5 +1,5 @@
 format:
-	black .
+	black --line-length 120 .
 	isort .
 
 clean-docker:

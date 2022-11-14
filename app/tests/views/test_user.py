@@ -1,6 +1,6 @@
 from app import schemas
 from app.crud import user as crud_user
-from app.tests.utils import create_user_factory, create_notification_factory
+from app.tests.utils import create_notification_factory, create_user_factory
 
 
 def test_create_user_ok(client, db_session):

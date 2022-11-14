@@ -29,7 +29,9 @@ def send_notification(self, notification_id: int):
             )
             raise Exception()
 
-        crud_notification.update_notification_status(db, notification_id, schemas.StatusEnum.done)
+        crud_notification.update_notification_status(
+            db, notification_id, schemas.StatusEnum.done
+        )
 
 
 @shared_task(name="schedule_failed_notifications")

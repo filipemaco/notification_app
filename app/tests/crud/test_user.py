@@ -1,7 +1,7 @@
 from app import schemas
-from app.crud import user as crud_user
 from app.crud import notification as crud_notification
-from app.tests.utils import create_user_factory, create_notification_factory
+from app.crud import user as crud_user
+from app.tests.utils import create_notification_factory, create_user_factory
 
 
 def test_create_user(db_session):
@@ -45,7 +45,9 @@ def test_get_user_by_email(db_session):
     assert user.country_code == expected_user.country_code
     assert user.phone_number == expected_user.phone_number
 
-    user = crud_user.get_user_by_email(db_session, expected_user.email, expected_user.id)
+    user = crud_user.get_user_by_email(
+        db_session, expected_user.email, expected_user.id
+    )
 
     assert not user
 
@@ -53,7 +55,9 @@ def test_get_user_by_email(db_session):
 def test_get_user_by_code_and_phone(db_session):
     expected_user = create_user_factory(db_session)
 
-    user = crud_user.get_user_by_code_and_phone(db_session, expected_user.country_code, expected_user.phone_number)
+    user = crud_user.get_user_by_code_and_phone(
+        db_session, expected_user.country_code, expected_user.phone_number
+    )
 
     assert user.id == expected_user.id
     assert user.email == expected_user.email
@@ -88,7 +92,9 @@ def test_get_users(db_session):
 def test_update_user(db_session):
     user_id = create_user_factory(db_session).id
 
-    user_update = schemas.UserUpdate(email="test@gmail.com", country_code=44, phone_number=3222133)
+    user_update = schemas.UserUpdate(
+        email="test@gmail.com", country_code=44, phone_number=3222133
+    )
 
     user = crud_user.update_user(db_session, user_id, user_update)
 
