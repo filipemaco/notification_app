@@ -23,7 +23,7 @@ class BaseConfig:
     CELERY_BEAT_SCHEDULE: dict = {
         "schedule-failed-notifications": {
             "task": "schedule_failed_notifications",
-            "schedule": 120.0,  # every two minutes for debugging purpose, it could be every two hours
+            "schedule": crontab(minute="*/2"),  # every two minutes for debugging purpose, it could be every two hours
         },
     }
 
