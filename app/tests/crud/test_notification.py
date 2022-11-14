@@ -2,30 +2,23 @@ from datetime import datetime, timedelta
 
 from app import schemas
 from app.crud import notification as crud_notification
-from app.crud import user as crud_user
 from app.models import Notification
+from app.tests.utils import create_user_factory, create_notification_factory
 
 
 def test_create_notification(db_session):
-    user_id = crud_user.create_user(
-        db_session,
-        schemas.UserCreate(
-            id=44, email="random@gmail.com", country_code=22, phone_number=333333
-        ),
-    ).id
+    user_id = create_user_factory(db_session).id
 
     subject = "hi"
     content = {"a": "b"}
     notification_type = schemas.NotificationTypeEnum.email.value
 
-    notification = crud_notification.create_user_notification(
-        db_session,
-        schemas.NotificationCreate(
-            user_id=user_id,
-            subject=subject,
-            content=content,
-            notification_type=notification_type,
-        ),
+    notification = create_notification_factory(
+        db=db_session,
+        user_id=user_id,
+        subject=subject,
+        content=content,
+        notification_type=notification_type,
     )
 
     assert notification.user_id == user_id
@@ -36,21 +29,14 @@ def test_create_notification(db_session):
 
 
 def test_get_notification(db_session):
-    user_id = crud_user.create_user(
-        db_session,
-        schemas.UserCreate(
-            id=44, email="random@gmail.com", country_code=22, phone_number=333333
-        ),
-    ).id
+    user_id = create_user_factory(db_session).id
 
-    expected_notification = crud_notification.create_user_notification(
-        db_session,
-        schemas.NotificationCreate(
-            user_id=user_id,
-            subject="hi",
-            content={"a": "b"},
-            notification_type=schemas.NotificationTypeEnum.sms.value,
-        ),
+    expected_notification = create_notification_factory(
+        db=db_session,
+        user_id=user_id,
+        subject="hi",
+        content={"a": "b"},
+        notification_type=schemas.NotificationTypeEnum.sms.value,
     )
 
     notification = crud_notification.get_notification(
@@ -64,24 +50,11 @@ def test_get_notification(db_session):
 
 
 def test_update_notification_status(db_session):
-    user_id = crud_user.create_user(
-        db_session,
-        schemas.UserCreate(
-            id=11,
-            email="random@gmail.com",
-            country_code=22,
-            phone_number=333333,
-        ),
-    ).id
-
-    notification = crud_notification.create_user_notification(
-        db_session,
-        schemas.NotificationCreate(
-            subject="Text",
-            content={"random": "text"},
-            notification_type=schemas.NotificationTypeEnum.email.value,
-            user_id=user_id,
-        ),
+    notification = create_notification_factory(
+        db=db_session,
+        subject="Text",
+        content={"random": "text"},
+        notification_type=schemas.NotificationTypeEnum.email.value,
     )
 
     assert notification.status == schemas.StatusEnum.new
@@ -95,15 +68,7 @@ def test_update_notification_status(db_session):
 
 
 def test_get_stuck_notifications(db_session):
-    user_id = crud_user.create_user(
-        db_session,
-        schemas.UserCreate(
-            id=11,
-            email="random@gmail.com",
-            country_code=22,
-            phone_number=333333,
-        ),
-    ).id
+    user_id = create_user_factory(db_session).id
 
     data = [
         (1, datetime.utcnow(), schemas.StatusEnum.done),

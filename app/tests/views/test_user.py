@@ -1,6 +1,7 @@
 from app import schemas
 from app.crud import notification as crud_notification
 from app.crud import user as crud_user
+from app.tests.utils import create_user_factory, create_notification_factory
 
 
 def test_create_user_ok(client, db_session):
@@ -61,17 +62,13 @@ def test_create_duplicate_user_phone_number_failed(client, db_session):
 
 
 def test_get_users_ok(client, db_session):
-    crud_user.create_user(
-        db_session,
-        schemas.UserCreate(
-            id=1, email="random@gmail.com", country_code=22, phone_number=333333
-        ),
-    )
-    crud_user.create_user(
-        db_session,
-        schemas.UserCreate(
-            id=2, email="text@gmail.com", country_code=333, phone_number=4444444
-        ),
+    create_user_factory(db_session)
+    create_user_factory(
+        db=db_session,
+        id=2,
+        email="text@gmail.com",
+        country_code=333,
+        phone_number=4444444,
     )
 
     response = client.get("/users/")
@@ -96,24 +93,16 @@ def test_get_users_ok(client, db_session):
 
 
 def test_get_user_ok(client, db_session):
-    user = schemas.UserCreate(
-        id=2, email="random@gmail.com", country_code=22, phone_number=333333
-    )
-    notification = schemas.NotificationCreate(
-        subject="Text",
-        content={"random": "text"},
-        notification_type=schemas.NotificationTypeEnum.email.value,
-        user_id=user.id,
-    )
-    crud_user.create_user(db_session, user)
-    crud_notification.create_user_notification(db_session, notification)
+    user = create_user_factory(db_session)
+    notification = create_notification_factory(db=db_session, user_id=user.id)
 
     response = client.get(f"/users/{user.id}")
     content = response.json()
     notifications = content.pop("notifications")
 
     assert response.status_code == 200
-    assert content == user.dict()
+    assert content["id"] == user.id
+    assert content["email"] == user.email
     assert notifications[0]["status"] == schemas.StatusEnum.new.value
     assert notifications[0]["subject"] == notification.subject
     assert notifications[0]["notification_type"] == notification.notification_type
@@ -127,10 +116,7 @@ def test_get_nonexistent_user_failed(client, db_session):
 
 
 def test_delete_user_ok(client, db_session):
-    user = schemas.UserCreate(
-        id=2, email="random@gmail.com", country_code=22, phone_number=333333
-    )
-    crud_user.create_user(db_session, user)
+    user = create_user_factory(db_session)
 
     response = client.delete(f"/users/{user.id}")
 
@@ -145,12 +131,7 @@ def test_delete_user_failed(client, db_session):
 
 
 def test_update_user_ok(client, db_session):
-    user = crud_user.create_user(
-        db_session,
-        schemas.UserCreate(
-            id=2, email="random@gmail.com", country_code=22, phone_number=333333
-        ),
-    )
+    user = create_user_factory(db_session)
 
     user_update = schemas.UserUpdate(
         email="test@gmail.com", country_code=22, phone_number=3222133
@@ -177,46 +158,40 @@ def test_update_nonexistent_user_failed(client, db_session):
 
 
 def test_update_duplicate_user_email_failed(client, db_session):
-    crud_user.create_user(
-        db_session,
-        schemas.UserCreate(
-            id=1, email="random@gmail.com", country_code=22, phone_number=333333
-        ),
-    )
-    user = crud_user.create_user(
-        db_session,
-        schemas.UserCreate(
-            id=2, email="text@gmail.com", country_code=333, phone_number=4444444
-        ),
-    )
+    create_user_factory(db_session, email="random@gmail.com")
+
+    user_id = create_user_factory(
+        db=db_session,
+        id=2,
+        email="text@gmail.com",
+        country_code=333,
+        phone_number=4444444,
+    ).id
 
     user_update = schemas.UserUpdate(
         email="random@gmail.com", country_code=333, phone_number=4444444
     )
-    response = client.put(f"/users/{user.id}", json=user_update.dict())
+    response = client.put(f"/users/{user_id}", json=user_update.dict())
 
     assert response.status_code == 400
     assert response.json()["detail"] == "Email already registered"
 
 
 def test_update_duplicate_user_phone_number_failed(client, db_session):
-    crud_user.create_user(
-        db_session,
-        schemas.UserCreate(
-            id=1, email="random@gmail.com", country_code=22, phone_number=333333
-        ),
-    )
-    user = crud_user.create_user(
-        db_session,
-        schemas.UserCreate(
-            id=2, email="text@gmail.com", country_code=333, phone_number=4444444
-        ),
-    )
+    create_user_factory(db_session, country_code=22, phone_number=333333)
+
+    user_id = create_user_factory(
+        db=db_session,
+        id=2,
+        email="text@gmail.com",
+        country_code=333,
+        phone_number=4444444,
+    ).id
 
     user_update = schemas.UserUpdate(
         email="text@gmail.com", country_code=22, phone_number=333333
     )
-    response = client.put(f"/users/{user.id}", json=user_update.dict())
+    response = client.put(f"/users/{user_id}", json=user_update.dict())
 
     assert response.status_code == 400
     assert response.json()["detail"] == "Phone number already registered"

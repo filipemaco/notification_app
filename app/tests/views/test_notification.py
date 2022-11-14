@@ -1,39 +1,23 @@
 from unittest import mock
 
 from app import schemas
-from app.crud import notification as crud_notification
-from app.crud import user as crud_user
 from app.tasks.notification import send_notification
+from app.tests.utils import create_notification_factory, create_user_factory
 
 
 def test_get_notifications_ok(client, db_session):
-    users = []
-    # Create five users
+    # Create five users and ten notifications
     for i in range(1, 6):
-        users.append(
-            crud_user.create_user(
-                db_session,
-                schemas.UserCreate(
-                    id=i,
-                    email=f"random{i}@gmail.com",
-                    country_code=22 + i,
-                    phone_number=333333 + i,
-                ),
-            )
+        create_user_factory(
+            db=db_session,
+            id=i,
+            email=f"random{i}@gmail.com",
+            country_code=22 + i,
+            phone_number=333333 + i,
         )
 
-    # Create two notification for each user
-    for user in users:
         for _ in range(2):
-            crud_notification.create_user_notification(
-                db_session,
-                schemas.NotificationCreate(
-                    subject="Text",
-                    content={"random": "text"},
-                    notification_type=schemas.NotificationTypeEnum.email.value,
-                    user_id=user.id,
-                ),
-            )
+            create_notification_factory(db=db_session, user_id=i)
 
     response = client.get("/notifications/")
 
@@ -42,22 +26,16 @@ def test_get_notifications_ok(client, db_session):
 
 
 def test_create_notification_ok(client, db_session, settings, monkeypatch):
-    user = crud_user.create_user(
-        db_session,
-        schemas.UserCreate(
-            id=2, email="random@gmail.com", country_code=22, phone_number=333333
-        ),
-    )
-
-    task_send_notification = mock.MagicMock(name="task_send_notification")
-    monkeypatch.setattr(send_notification, "delay", task_send_notification)
-
+    user = create_user_factory(db_session)
     notification = schemas.NotificationCreate(
         subject="Text",
         content={"random": "text"},
         notification_type=schemas.NotificationTypeEnum.sms.value,
         user_id=user.id,
     )
+
+    task_send_notification = mock.MagicMock(name="task_send_notification")
+    monkeypatch.setattr(send_notification, "delay", task_send_notification)
 
     response = client.post("/notifications/", json=notification.dict())
     content = response.json()
@@ -85,21 +63,7 @@ def test_create_notification_with_wrong_user_id_failed(client, db_session):
 
 
 def test_get_notification_ok(client, db_session):
-    user = crud_user.create_user(
-        db_session,
-        schemas.UserCreate(
-            id=2, email="random@gmail.com", country_code=22, phone_number=333333
-        ),
-    )
-    notification = crud_notification.create_user_notification(
-        db_session,
-        schemas.NotificationCreate(
-            subject="Text",
-            content={"random": "text"},
-            notification_type=schemas.NotificationTypeEnum.email.value,
-            user_id=user.id,
-        ),
-    )
+    notification = create_notification_factory(db=db_session)
 
     response = client.get(f"/notifications/{notification.id}")
     content = response.json()

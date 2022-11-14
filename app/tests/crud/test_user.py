@@ -1,6 +1,7 @@
 from app import schemas
 from app.crud import user as crud_user
 from app.crud import notification as crud_notification
+from app.tests.utils import create_user_factory, create_notification_factory
 
 
 def test_create_user(db_session):
@@ -9,11 +10,12 @@ def test_create_user(db_session):
     country_code = 22
     phone_number = 333333
 
-    user = crud_user.create_user(
-        db_session,
-        schemas.UserCreate(
-            id=id, email=email, country_code=country_code, phone_number=phone_number
-        ),
+    user = create_user_factory(
+        db=db_session,
+        id=id,
+        email=email,
+        country_code=country_code,
+        phone_number=phone_number,
     )
 
     assert user.id == id
@@ -23,12 +25,7 @@ def test_create_user(db_session):
 
 
 def test_get_user(db_session):
-    expected_user = crud_user.create_user(
-        db_session,
-        schemas.UserCreate(
-            id=2, email="random@gmail.com", country_code=22, phone_number=333333
-        ),
-    )
+    expected_user = create_user_factory(db_session)
 
     user = crud_user.get_user(db_session, expected_user.id)
 
@@ -39,12 +36,7 @@ def test_get_user(db_session):
 
 
 def test_get_user_by_email(db_session):
-    expected_user = crud_user.create_user(
-        db_session,
-        schemas.UserCreate(
-            id=2, email="random@gmail.com", country_code=22, phone_number=333333
-        ),
-    )
+    expected_user = create_user_factory(db_session)
 
     user = crud_user.get_user_by_email(db_session, expected_user.email)
 
@@ -61,12 +53,7 @@ def test_get_user_by_email(db_session):
 
 
 def test_get_user_by_code_and_phone(db_session):
-    expected_user = crud_user.create_user(
-        db_session,
-        schemas.UserCreate(
-            id=2, email="random@gmail.com", country_code=22, phone_number=333333
-        ),
-    )
+    expected_user = create_user_factory(db_session)
 
     user = crud_user.get_user_by_code_and_phone(
         db_session, expected_user.country_code, expected_user.phone_number
@@ -89,14 +76,12 @@ def test_get_user_by_code_and_phone(db_session):
 
 def test_get_users(db_session):
     for i in range(1, 6):
-        crud_user.create_user(
-            db_session,
-            schemas.UserCreate(
-                id=i,
-                email=f"random{i}@gmail.com",
-                country_code=22 + i,
-                phone_number=333333 + i,
-            ),
+        create_user_factory(
+            db=db_session,
+            id=i,
+            email=f"random{i}@gmail.com",
+            country_code=22 + i,
+            phone_number=333333 + i,
         )
 
     user = crud_user.get_users(db_session)
@@ -105,12 +90,7 @@ def test_get_users(db_session):
 
 
 def test_update_user(db_session):
-    user_id = crud_user.create_user(
-        db_session,
-        schemas.UserCreate(
-            id=5423, email="random@gmail.com", country_code=22, phone_number=333333
-        ),
-    ).id
+    user_id = create_user_factory(db_session).id
 
     user_update = schemas.UserUpdate(
         email="test@gmail.com", country_code=44, phone_number=3222133
@@ -125,22 +105,9 @@ def test_update_user(db_session):
 
 
 def test_delete_user(db_session):
-    user_id = crud_user.create_user(
-        db_session,
-        schemas.UserCreate(
-            id=2, email="random@gmail.com", country_code=22, phone_number=333333
-        ),
-    ).id
+    user_id = create_user_factory(db_session).id
 
-    notification_id = crud_notification.create_user_notification(
-        db_session,
-        schemas.NotificationCreate(
-            subject="Text",
-            content={"random": "text"},
-            notification_type=schemas.NotificationTypeEnum.email.value,
-            user_id=user_id,
-        ),
-    ).id
+    notification_id = create_notification_factory(db=db_session, user_id=user_id).id
 
     crud_user.delete_user(db_session, user_id)
 
