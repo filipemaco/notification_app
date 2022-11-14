@@ -1,6 +1,9 @@
+from unittest import mock
+
 from app import schemas
 from app.crud import notification as crud_notification
 from app.crud import user as crud_user
+from app.tasks.notification import send_notification
 
 
 def test_get_notifications_ok(client, db_session):
@@ -38,13 +41,16 @@ def test_get_notifications_ok(client, db_session):
     assert len(response.json()) == 10
 
 
-def test_create_notification_ok(client, db_session):
+def test_create_notification_ok(client, db_session, settings, monkeypatch):
     user = crud_user.create_user(
         db_session,
         schemas.UserCreate(
             id=2, email="random@gmail.com", country_code=22, phone_number=333333
         ),
     )
+
+    task_send_notification = mock.MagicMock(name="task_send_notification")
+    monkeypatch.setattr(send_notification, "delay", task_send_notification)
 
     notification = schemas.NotificationCreate(
         subject="Text",
@@ -61,6 +67,7 @@ def test_create_notification_ok(client, db_session):
     assert content["subject"] == notification.subject
     assert content["notification_type"] == notification.notification_type
     assert content["user_id"] == user.id
+    task_send_notification.assert_called_with(content["id"])
 
 
 def test_create_notification_with_wrong_user_id_failed(client, db_session):

@@ -43,7 +43,7 @@ def update_notification_status(
     db.commit()
 
 
-def get_stuck_notifications(db: Session) -> List[models.Notification.id]:
+def get_stuck_notifications(db: Session) -> List[models.Notification]:
     two_hours_ago = datetime.utcnow() - timedelta(hours=2)
 
     return (

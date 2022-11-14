@@ -1,5 +1,6 @@
 from app import schemas
 from app.crud import user as crud_user
+from app.crud import notification as crud_notification
 
 
 def test_create_user(db_session):
@@ -131,8 +132,20 @@ def test_delete_user(db_session):
         ),
     ).id
 
+    notification_id = crud_notification.create_user_notification(
+        db_session,
+        schemas.NotificationCreate(
+            subject="Text",
+            content={"random": "text"},
+            notification_type=schemas.NotificationTypeEnum.email.value,
+            user_id=user_id,
+        ),
+    ).id
+
     crud_user.delete_user(db_session, user_id)
 
     user = crud_user.get_user(db_session, user_id)
+    notification = crud_notification.get_notification(db_session, notification_id)
 
     assert not user
+    assert not notification

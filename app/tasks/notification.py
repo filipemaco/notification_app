@@ -27,16 +27,13 @@ def send_notification(self, notification_id: int):
             crud_notification.update_notification_status(
                 db, notification_id, schemas.StatusEnum.failed
             )
-            db.commit()
             raise Exception()
 
-        crud_notification.update_notification_status(
-            db, notification_id, schemas.StatusEnum.done
-        )
+        crud_notification.update_notification_status(db, notification_id, schemas.StatusEnum.done)
 
 
-@shared_task(name="task_schedule_failed_notifications")
-def task_schedule_failed_notifications():
+@shared_task(name="schedule_failed_notifications")
+def schedule_failed_notifications():
     with db_context() as db:
         for notification_id in crud_notification.get_stuck_notifications(db):
             send_notification.delay(notification_id)

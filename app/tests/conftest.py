@@ -8,15 +8,13 @@ os.environ["FASTAPI_CONFIG"] = "testing"  # noqa
 @pytest.fixture
 def settings():
     from app.config import settings as _settings
-
     return _settings
 
 
 @pytest.fixture
 def app(settings):
-    from app.main import app
-
-    return app
+    from app.main import create_app
+    return create_app()
 
 
 @pytest.fixture()

@@ -1,4 +1,5 @@
 from fastapi import APIRouter, Depends, HTTPException
+
 from sqlalchemy.orm import Session
 
 from app import schemas
@@ -31,7 +32,6 @@ def create_notification_for_user(
     )
 
     send_notification.delay(notification_db.id)
-
     return notification_db
 
 
