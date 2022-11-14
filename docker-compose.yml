@@ -48,7 +48,7 @@ services:
   celery_beat:
     container_name: celery_beat
     build: .
-    command: celery -A app.main.celery beat --loglevel=info
+    command: celery -A app.main.celery beat -l info
     volumes:
       - .:/app
     env_file:

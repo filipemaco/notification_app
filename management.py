@@ -1,4 +1,5 @@
 import json
+from datetime import datetime, timedelta
 
 import typer
 
@@ -22,8 +23,10 @@ def populate_db():
         db.add(User(**d))
 
     data = json.loads(open("dummy_data/notifications.json").read())
+    one_day_ago = datetime.utcnow() - timedelta(days=1)
+
     for d in data:
-        db.add(Notification(**d))
+        db.add(Notification(created_at=one_day_ago, **d))
 
     db.commit()
     db.close()
