@@ -20,7 +20,12 @@ def send_notification(self, notification_id: int):
             db, notification_id, schemas.StatusEnum.in_progress
         )
 
-        time.sleep(2)  # Send request to provider or add to queue
+        time.sleep(1)
+        # It is missing the logic to send the notification to the right provider.
+        # SMS Message to SMS Service
+        # Email to Email Service
+        # iOS push notification to APNs
+        # Android push notification to FCM
 
         if random.choice([True, True, True, False]):  # True is an error, False is success
             # Random error in API

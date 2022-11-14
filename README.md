@@ -1,12 +1,8 @@
 # Notification app
-- API written in Python with FastAPI.
-
-#### Notes
-- A notification system for push notification, SMS message and email
-
-## Project Structure
-
-
+- An internal notification system for push notification (Android and iOS), SMS message and email. The API written in 
+  Python with FastAPI.
+- It is possible to add/change/delete the user information (id, email, phone_number)
+- It is possible to create notifications for the users and check the status of the notification.
 
 
 ## Setup the project locally
@@ -60,14 +56,15 @@ docker-compose logs -f
 docker-compose stop
 ```
 
+#### Bring down the containers and volumes
+```shell
+docker-compose down -v
+```
+
 
 ## Next Steps
-- I would add **pagination** to the endpoints and return the logs order by datetime. And add an 
-  index for the column **created** in the table **log**. This solution would allow the application to scale
-  with the increase of data in the database.
-- I would add database migrations with Flask-Migrate library. This step can allow us to manage the changes in the 
-  database 
-  easily.
-- I would add logs to the project to keep track of what's happening behind the scenes. 
-- I would add the production configurations to run the project. For example, the SECRET_KEY, credentials for the 
-  production database and other things.
+- Add more functionalities to the endpoints. Example: Filter message by status.
+- Add database migrations with Alembic library. This step can allow us to manage the changes in the 
+  database easily.
+- Add logs to the project to keep track of what's happening behind the scenes. 
+- Add the production configurations to run the project.
