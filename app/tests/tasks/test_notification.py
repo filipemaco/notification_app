@@ -12,7 +12,7 @@ from app.tests.utils import create_notification_factory, create_user_factory
 
 @mock.patch("app.tasks.notification.random.choice")
 def test_send_notification_failed(random_choice_mock, db_session):
-    random_choice_mock.return_value = 0
+    random_choice_mock.return_value = True
     notification = create_notification_factory(db_session)
 
     with pytest.raises(Exception):
@@ -25,7 +25,7 @@ def test_send_notification_failed(random_choice_mock, db_session):
 
 @mock.patch("app.tasks.notification.random.choice")
 def test_send_notification_ok(random_choice_mock, db_session):
-    random_choice_mock.return_value = 1
+    random_choice_mock.return_value = False
     notification = create_notification_factory(db_session)
 
     send_notification(notification.id)

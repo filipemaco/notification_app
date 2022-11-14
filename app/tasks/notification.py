@@ -22,7 +22,7 @@ def send_notification(self, notification_id: int):
 
         time.sleep(2)  # Send request to provider or add to queue
 
-        if not random.choice([0, 0, 0, 1]):
+        if random.choice([True, True, True, False]):  # True is an error, False is success
             # Random error in API
             crud_notification.update_notification_status(
                 db, notification_id, schemas.StatusEnum.failed
@@ -37,5 +37,6 @@ def send_notification(self, notification_id: int):
 @shared_task(name="schedule_failed_notifications")
 def schedule_failed_notifications():
     with db_context() as db:
-        for notification_id in crud_notification.get_stuck_notifications(db):
-            send_notification.delay(notification_id)
+        for notification in crud_notification.get_stuck_notifications(db):
+            send_notification.delay(notification.id)
+

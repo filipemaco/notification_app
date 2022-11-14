@@ -2,8 +2,6 @@ import os
 import pathlib
 from functools import lru_cache
 
-from celery.schedules import crontab
-
 
 class BaseConfig:
     BASE_DIR: pathlib.Path = pathlib.Path(__file__).parent.parent
@@ -23,7 +21,7 @@ class BaseConfig:
     CELERY_BEAT_SCHEDULE: dict = {
         "schedule-failed-notifications": {
             "task": "schedule_failed_notifications",
-            "schedule": crontab(minute="*/2"),  # every two minutes for debugging purpose, it could be every two hours
+            "schedule": 120.0,  # every one minute for debugging purpose, it could be every two hours
         },
     }
 

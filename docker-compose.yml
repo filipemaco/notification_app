@@ -56,6 +56,7 @@ services:
     depends_on:
       - notification_service
       - redis
+      - celery_worker
       - db
 
   flower:
