@@ -12,7 +12,8 @@
 - Swagger API documentation is available in here: **http://127.0.0.1:8004/docs**
 - The celery dashboard is available in here: **http://127.0.0.1:5557**
 
-### Pre-populate the database
+### Pre-populate the database 
+It will reset the database and add users and notifications.
 ```sh
 docker-compose exec notification_service python management.py recreate-db && \
 docker-compose exec notification_service python management.py populate-db
