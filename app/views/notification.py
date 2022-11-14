@@ -20,15 +20,11 @@ def get_notifications(skip: int = 0, limit: int = 100, db: Session = Depends(get
 
 
 @router.post("/", response_model=schemas.Notification, summary="Create a notification")
-def create_notification_for_user(
-    notification: schemas.NotificationCreate, db: Session = Depends(get_db)
-):
+def create_notification_for_user(notification: schemas.NotificationCreate, db: Session = Depends(get_db)):
     if not crud_user.get_user(db, user_id=notification.user_id):
         raise HTTPException(status_code=400, detail="User does not exist")
 
-    notification_db = crud_notification.create_user_notification(
-        db=db, notification=notification
-    )
+    notification_db = crud_notification.create_user_notification(db=db, notification=notification)
 
     send_notification.delay(notification_db.id)
     return notification_db
@@ -36,9 +32,7 @@ def create_notification_for_user(
 
 @router.get("/{notification_id}", response_model=schemas.Notification)
 def get_notification(notification_id: int, db: Session = Depends(get_db)):
-    db_notification = crud_notification.get_notification(
-        db, notification_id=notification_id
-    )
+    db_notification = crud_notification.get_notification(db, notification_id=notification_id)
     if not db_notification:
         raise HTTPException(status_code=404, detail="Notification not found")
     return db_notification

@@ -9,9 +9,7 @@ def get_user(db: Session, user_id: int) -> Optional[models.User]:
     return db.query(models.User).filter(models.User.id == user_id).first()
 
 
-def get_user_by_email(
-    db: Session, email: str, user_id: Optional[int] = None
-) -> Optional[models.User]:
+def get_user_by_email(db: Session, email: str, user_id: Optional[int] = None) -> Optional[models.User]:
     db_users = db.query(models.User).filter(models.User.email == email)
     if user_id:
         db_users = db_users.filter(models.User.id != user_id)

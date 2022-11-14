@@ -11,12 +11,15 @@ def create_app() -> FastAPI:
     )
 
     from app.celery_utils import create_celery
+
     app.celery_app = create_celery()
 
     from app.views import users_router
+
     app.include_router(users_router)
 
     from app.views import notifications_router
+
     app.include_router(notifications_router)
 
     @app.on_event("startup")

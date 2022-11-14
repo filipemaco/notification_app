@@ -31,9 +31,7 @@ def create_notification_factory(
     user_id: Optional[int] = None,
     subject: Optional[str] = "Text",
     content: Optional[dict] = None,
-    notification_type: Optional[
-        schemas.NotificationTypeEnum.email
-    ] = schemas.NotificationTypeEnum.email,
+    notification_type: Optional[schemas.NotificationTypeEnum.email] = schemas.NotificationTypeEnum.email,
 ) -> Notification:
     return crud_notification.create_user_notification(
         db,

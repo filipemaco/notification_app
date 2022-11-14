@@ -23,9 +23,7 @@ def test_create_user_ok(client, db_session):
 
 
 def test_create_duplicate_user_failed(client, db_session):
-    user = schemas.UserCreate(
-        id=2, email="random@gmail.com", country_code=22, phone_number=333333
-    )
+    user = schemas.UserCreate(id=2, email="random@gmail.com", country_code=22, phone_number=333333)
     crud_user.create_user(db_session, user)
 
     response = client.post("/users/", json=user.dict())
@@ -35,9 +33,7 @@ def test_create_duplicate_user_failed(client, db_session):
 
 
 def test_create_duplicate_user_email_failed(client, db_session):
-    user = schemas.UserCreate(
-        id=2, email="random@gmail.com", country_code=22, phone_number=333333
-    )
+    user = schemas.UserCreate(id=2, email="random@gmail.com", country_code=22, phone_number=333333)
     crud_user.create_user(db_session, user)
     user.id = 3
 
@@ -48,9 +44,7 @@ def test_create_duplicate_user_email_failed(client, db_session):
 
 
 def test_create_duplicate_user_phone_number_failed(client, db_session):
-    user = schemas.UserCreate(
-        id=2, email="random@gmail.com", country_code=22, phone_number=333333
-    )
+    user = schemas.UserCreate(id=2, email="random@gmail.com", country_code=22, phone_number=333333)
     crud_user.create_user(db_session, user)
     user.id, user.email = 3, "random2@gmail.com"
 
@@ -132,9 +126,7 @@ def test_delete_user_failed(client, db_session):
 def test_update_user_ok(client, db_session):
     user = create_user_factory(db_session)
 
-    user_update = schemas.UserUpdate(
-        email="test@gmail.com", country_code=22, phone_number=3222133
-    )
+    user_update = schemas.UserUpdate(email="test@gmail.com", country_code=22, phone_number=3222133)
     response = client.put(f"/users/{user.id}", json=user_update.dict())
 
     db_session.refresh(user)
@@ -146,9 +138,7 @@ def test_update_user_ok(client, db_session):
 
 
 def test_update_nonexistent_user_failed(client, db_session):
-    user = schemas.UserUpdate(
-        email="test@gmail.com", country_code=22, phone_number=333333
-    )
+    user = schemas.UserUpdate(email="test@gmail.com", country_code=22, phone_number=333333)
 
     response = client.put("/users/1", json=user.dict())
 
@@ -167,9 +157,7 @@ def test_update_duplicate_user_email_failed(client, db_session):
         phone_number=4444444,
     ).id
 
-    user_update = schemas.UserUpdate(
-        email="random@gmail.com", country_code=333, phone_number=4444444
-    )
+    user_update = schemas.UserUpdate(email="random@gmail.com", country_code=333, phone_number=4444444)
     response = client.put(f"/users/{user_id}", json=user_update.dict())
 
     assert response.status_code == 400
@@ -187,9 +175,7 @@ def test_update_duplicate_user_phone_number_failed(client, db_session):
         phone_number=4444444,
     ).id
 
-    user_update = schemas.UserUpdate(
-        email="text@gmail.com", country_code=22, phone_number=333333
-    )
+    user_update = schemas.UserUpdate(email="text@gmail.com", country_code=22, phone_number=333333)
     response = client.put(f"/users/{user_id}", json=user_update.dict())
 
     assert response.status_code == 400
