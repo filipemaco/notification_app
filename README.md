@@ -63,6 +63,7 @@ docker-compose down -v
 
 
 ## Next Steps
+- Add validation for some fields. For example: email and phone number. 
 - Add more functionalities to the endpoints. Example: Filter message by status.
 - Add database migrations with Alembic library. This step can allow us to manage the changes in the 
   database easily.
