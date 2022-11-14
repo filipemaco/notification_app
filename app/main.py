@@ -9,7 +9,7 @@ from app.database import Base, engine
 def create_app() -> FastAPI:
     app = FastAPI(
         title="Zoe Notification System",
-        description="Notification System Description",
+        description="A notification system for push notification, SMS message and email",
         version="0.0.1",
     )
 
@@ -38,6 +38,7 @@ async def startup_event():
     Base.metadata.create_all(bind=engine)
 
 
+# For debug purpose only
 if __name__ == "__main__":
     import uvicorn
 

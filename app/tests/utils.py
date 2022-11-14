@@ -42,4 +42,3 @@ def create_notification_factory(
             user_id=user_id or create_user_factory(db).id,
         ),
     )
-

@@ -1,5 +1,4 @@
 from app import schemas
-from app.crud import notification as crud_notification
 from app.crud import user as crud_user
 from app.tests.utils import create_user_factory, create_notification_factory
 

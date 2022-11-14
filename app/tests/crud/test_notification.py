@@ -39,9 +39,7 @@ def test_get_notification(db_session):
         notification_type=schemas.NotificationTypeEnum.sms.value,
     )
 
-    notification = crud_notification.get_notification(
-        db_session, expected_notification.id
-    )
+    notification = crud_notification.get_notification(db_session, expected_notification.id)
 
     assert notification.user_id == user_id
     assert notification.subject == expected_notification.subject
@@ -59,9 +57,7 @@ def test_update_notification_status(db_session):
 
     assert notification.status == schemas.StatusEnum.new
 
-    crud_notification.update_notification_status(
-        db_session, notification.id, schemas.StatusEnum.failed
-    )
+    crud_notification.update_notification_status(db_session, notification.id, schemas.StatusEnum.failed)
     db_session.refresh(notification)
 
     assert notification.status == schemas.StatusEnum.failed
@@ -103,7 +99,4 @@ def test_get_stuck_notifications(db_session):
 
     db_session.commit()
 
-    assert all(
-        notification.id in (6, 7, 8)
-        for notification in crud_notification.get_stuck_notifications(db_session)
-    )
+    assert all(notification.id in (6, 7, 8) for notification in crud_notification.get_stuck_notifications(db_session))
